@@ -1,43 +1,42 @@
 {
-    "name": "timkeltycraftcms/registrar",
-    "description": "Allow public registration with configurable access restrictions.",
-    "type": "craft-plugin",
-    "version": "0.1.0",
-    "keywords": [
-        "craft",
-        "cms",
-        "craftcms",
-        "craft-plugin",
-        "registrar"
-    ],
-    "support": {
-        "docs": "https://github.com/timkelty/registrar/blob/master/README.md",
-        "issues": "https://github.com/timkelty/registrar/issues"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Tim Kelty",
-            "homepage": "https://github.com/timkelty"
-        }
-    ],
-    "require": {
-        "craftcms/cms": "^3.0.0-RC1"
-    },
-    "autoload": {
-        "psr-4": {
-          "timkeltycraftcms\\registrar\\": "src/"
-        }
-    },
-    "extra": {
-        "name": "Registrar",
-        "handle": "registrar",
-        "hasCpSettings": true,
-        "hasCpSection": true,
-        "changelogUrl": "https://raw.githubusercontent.com/timkelty/registrar/master/CHANGELOG.md",
-        "components": {
-            "registrarService": "timkeltycraftcms\\registrar\\services\\RegistrarService"
-        },
-        "class": "timkeltycraftcms\\registrar\\Registrar"
+  "name": "timkelty/craftcms-registrar",
+  "description": "Allow public registration with configurable access restrictions.",
+  "type": "craft-plugin",
+  "version": "0.1.0",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "registrar",
+    "registration",
+    "public"
+  ],
+  "support": {
+    "docs": "https://github.com/timkelty/registrar/blob/master/README.md",
+    "issues": "https://github.com/timkelty/registrar/issues"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tim Kelty",
+      "homepage": "https://github.com/timkelty"
     }
+  ],
+  "require": {
+    "craftcms/cms": "^3.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "timkelty\\craftcms\\registrar\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Registrar",
+    "handle": "registrar",
+    "hasCpSettings": false,
+    "hasCpSection": false,
+    "changelogUrl": "https://raw.githubusercontent.com/timkelty/registrar/master/CHANGELOG.md",
+    "class": "timkelty\\craftcms\\registrar\\Plugin"
+  }
 }
