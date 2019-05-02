@@ -2,7 +2,6 @@
 namespace timkelty\craftcms\registrar\models;
 
 use Craft;
-use timkelty\craftcms\registrar\Registrar;
 
 class Settings extends \craft\base\Model
 {

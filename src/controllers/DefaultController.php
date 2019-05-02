@@ -2,7 +2,6 @@
 namespace timkelty\craftcms\registrar\controllers;
 
 use Craft;
-use timkelty\craftcms\registrar\Registrar;
 
 class DefaultController extends \craft\web\Controller
 {
