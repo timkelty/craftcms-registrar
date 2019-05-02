@@ -1,0 +1,26 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Registrar plugin for Craft CMS 3.x
+ *
+ * Registrar Settings.twig
+ *
+ * @author    Tim Kelty
+ * @copyright Copyright (c) 2019 Tim Kelty
+ * @link      https://github.com/timkelty
+ * @package   Registrar
+ * @since     0.1.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("timkeltycraftcms\\registrar\\assetbundles\\registrar\\RegistrarAsset") %}
+
+{{ forms.textField({
+    label: 'Some Field',
+    instructions: 'Enter some setting here.',
+    id: 'someAttribute',
+    name: 'someAttribute',
+    value: settings['someAttribute']})
+}}
