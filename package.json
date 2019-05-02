@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "devDependencies": {
+    "@fusionary/prettier-config": "^1.0.0-rc.0"
+  }
+}
