@@ -6,7 +6,8 @@ use Craft;
 class UserRule extends \craft\base\Model
 {
     public $attribute;
-    public $pattern;
+    public $validator;
+    public $options;
     public $user;
 
     /**
@@ -21,8 +22,10 @@ class UserRule extends \craft\base\Model
     public function rules()
     {
         return [
-            ['attribute', 'string', 'default', 'value' => 'email'],
-            ['pattern', 'string'],
+            [['attribute', 'validator'], 'required'],
+            ['attribute', 'string'],
+            ['attribute', 'default', 'value' => 'email'],
+            ['validator', 'default', 'value' => 'match'],
         ];
     }
 }

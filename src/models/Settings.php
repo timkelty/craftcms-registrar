@@ -6,9 +6,14 @@ use Craft;
 class Settings extends \craft\base\Model
 {
     /**
-     * @var string
+     * @var array
      */
     public $rules = [];
+
+    /**
+     * @var bool
+     */
+    public $requireRule = false;
 
     /**
      * @inheritdoc
@@ -19,10 +24,11 @@ class Settings extends \craft\base\Model
         parent::init();
 
         $this->rules[] = [
-            'attribute' => 'email',
-            'pattern' => '/@fusionary\.com$/',
+            // 'options' => [
+            //     'pattern' => '/@fusionary\.com$/',
+            // ],
             'user' => [
-                'admin' => true,
+                'admin' => true
             ]
 
             // 'user' => function ($user) {

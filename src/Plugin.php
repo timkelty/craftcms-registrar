@@ -31,21 +31,35 @@ class Plugin extends \craft\base\Plugin
 
                 $valid = array_filter($settings->rules, function ($rule) use ($user) {
                     $rule = $rule instanceof UserRule ? $rule : new UserRule($rule);
-                    $attribute = $rule->attribute;
-                    $validator = new \yii\validators\RegularExpressionValidator([
-                        'pattern' => $rule->pattern,
+
+                    $rule->validate();
+
+                    $model = new DynamicModel([
+                        $rule->attribute => $user->{$rule->attribute}
                     ]);
 
-                    if ($validator->validate($user->$attribute)) {
-                        Craft::configure($user, $rule->user);
+                    $model->addRule($rule->attribute, $rule->validator, $rule->options);
+
+                    if ($model->validate()) {
+
+                        // TODO: should this be an event?
+                        if (is_callable($rule->user)) {
+                            call_user_func($rule->user, $user);
+                        } else {
+                            Craft::configure($user, $rule->user);
+                        }
 
                         return true;
-                    }
+                    } else {
+                        $user->addErrors($model->getErrors());
 
-                    $user->addError($attribute, Craft::t('app', 'Invalid Pattern.'));
+                        return false;
+                    }
                 });
 
-                return true;
+                if (empty($valid) && $settings->requireRule) {
+                    $event->isValid = false;
+                }
             }
         );
     }
