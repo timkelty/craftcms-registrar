@@ -8,16 +8,33 @@ class Settings extends \craft\base\Model
     /**
      * @var string
      */
-    public $someAttribute = 'Some Default';
+    public $rules = [];
 
     /**
      * @inheritdoc
      */
-    public function rules()
+
+    public function init()
     {
-        return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+        parent::init();
+
+        $this->rules[] = [
+            'attribute' => 'email',
+            'pattern' => '/@fusionary\.com$/',
+            'user' => [
+                'admin' => true,
+            ]
+
+            // 'user' => function ($user) {
+            //     $user->admin = true;
+            // }
         ];
     }
+    // public function rules()
+    // {
+    //     return [
+    //         ['someAttribute', 'string'],
+    //         ['someAttribute', 'default', 'value' => 'Some Default'],
+    //     ];
+    // }
 }
