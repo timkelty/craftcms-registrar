@@ -13,7 +13,7 @@ class Settings extends \craft\base\Model
     /**
      * @var bool
      */
-    public $requireRule = false;
+    public $requireRule = true;
 
     /**
      * @inheritdoc
@@ -24,9 +24,10 @@ class Settings extends \craft\base\Model
         parent::init();
 
         $this->rules[] = [
-            // 'options' => [
-            //     'pattern' => '/@fusionary\.com$/',
-            // ],
+            'options' => [
+                'pattern' => '/@fusionary\.com$/',
+                'message' => '{attribute} must be a fusionary.com address.'
+            ],
             'user' => [
                 'admin' => true
             ]
@@ -35,6 +36,21 @@ class Settings extends \craft\base\Model
             //     $user->admin = true;
             // }
         ];
+
+        // $this->rules[] = [
+        //     'options' => [
+        //         'pattern' => '/@gmail\.com$/',
+        //         'message' => 'Email must be from a gmail.com domain.'
+        //     ],
+        //     'user' => [
+        //         'admin' => true
+        //     ]
+
+        //     // 'user' => function ($user) {
+        //     //     $user->admin = true;
+        //     // }
+        // ];
+
     }
     // public function rules()
     // {

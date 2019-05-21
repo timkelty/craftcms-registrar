@@ -31,7 +31,6 @@ class Plugin extends \craft\base\Plugin
 
                 $valid = array_filter($settings->rules, function ($rule) use ($user) {
                     $rule = $rule instanceof UserRule ? $rule : new UserRule($rule);
-
                     $rule->validate();
 
                     $model = new DynamicModel([

@@ -5,8 +5,8 @@ use Craft;
 
 class UserRule extends \craft\base\Model
 {
-    public $attribute;
-    public $validator;
+    public $attribute = 'email';
+    public $validator = 'match';
     public $options;
     public $user;
 
@@ -14,18 +14,16 @@ class UserRule extends \craft\base\Model
      * @inheritdoc
      */
 
-    public function init()
-    {
-        parent::init();
-    }
+    // public function init()
+    // {
+    //     parent::init();
+    // }
 
     public function rules()
     {
         return [
             [['attribute', 'validator'], 'required'],
             ['attribute', 'string'],
-            ['attribute', 'default', 'value' => 'email'],
-            ['validator', 'default', 'value' => 'match'],
         ];
     }
 }
