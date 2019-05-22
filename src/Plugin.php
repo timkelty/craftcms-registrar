@@ -1,7 +1,6 @@
 <?php
 namespace timkelty\craftcms\registrar;
 
-use timkelty\craftcms\registrar\models\RegistrationTest;
 use craft\elements\User;
 use yii\base\Event;
 
