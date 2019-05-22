@@ -11,16 +11,16 @@ class RegistrationTest extends \craft\base\Model
     public $user;
     public $permissions;
 
-    private $_groupIds = [];
+    private $groupIds = [];
 
     public function getGroupIds()
     {
-        return $this->_groupIds;
+        return $this->groupIds;
     }
 
     public function setGroupIds($groupIds)
     {
-        $this->_groupIds = array_merge($this->_groupIds, $groupIds);
+        $this->groupIds = array_merge($this->groupIds, $groupIds);
     }
 
     public function setGroups($groups)

@@ -13,7 +13,7 @@ class Registration extends Component
 
   public function beforeUserSave(ModelEvent $event)
   {
-    if (!$event->isNew) {
+    if (!$this->isPublicRegistration($event)) {
       return;
     }
 
@@ -41,7 +41,7 @@ class Registration extends Component
 
   public function afterUserSave(ModelEvent $event)
   {
-    if (!$event->isNew) {
+    if (!$this->isPublicRegistration($event)) {
       return;
     }
 
@@ -62,5 +62,10 @@ class Registration extends Component
         Craft::$app->getUserPermissions()->saveUserPermissions($user->id, $test->permissions);
       }
     }
+  }
+
+  private function isPublicRegistration(ModelEvent $event)
+  {
+    return $event->isNew && !Craft::$app->getUser()->getIdentity();
   }
 }
