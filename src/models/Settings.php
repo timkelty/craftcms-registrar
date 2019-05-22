@@ -8,55 +8,38 @@ class Settings extends \craft\base\Model
     /**
      * @var array
      */
-    public $rules = [];
+    private $tests = [];
 
     /**
      * @var bool
      */
-    public $requireRule = true;
+    public $requireValidation = false;
 
-    /**
-     * @inheritdoc
-     */
-
-    public function init()
+    public function attributes()
     {
-        parent::init();
+        $attributes = parent::attributes();
+        $attributes[] = 'tests';
 
-        $this->rules[] = [
-            'options' => [
-                'pattern' => '/@fusionary\.com$/',
-                'message' => '{attribute} must be a fusionary.com address.'
-            ],
-            'user' => [
-                'admin' => true
-            ]
-
-            // 'user' => function ($user) {
-            //     $user->admin = true;
-            // }
-        ];
-
-        // $this->rules[] = [
-        //     'options' => [
-        //         'pattern' => '/@gmail\.com$/',
-        //         'message' => 'Email must be from a gmail.com domain.'
-        //     ],
-        //     'user' => [
-        //         'admin' => true
-        //     ]
-
-        //     // 'user' => function ($user) {
-        //     //     $user->admin = true;
-        //     // }
-        // ];
-
+        return $attributes;
     }
-    // public function rules()
-    // {
-    //     return [
-    //         ['someAttribute', 'string'],
-    //         ['someAttribute', 'default', 'value' => 'Some Default'],
-    //     ];
-    // }
+
+    public function setTests($tests)
+    {
+        $this->tests = $tests ?? [];
+    }
+
+    public function getTests()
+    {
+        return array_map(function ($test) {
+            return $test instanceof RegistrationTest ? $test : new RegistrationTest($test);
+        }, $this->tests);
+    }
+
+    public function rules()
+    {
+        // TODO: Validate tests with craft\validators\ArrayValidator?
+        return [
+            [['requireValidation', 'tests'], 'required'],
+        ];
+    }
 }
