@@ -1,6 +1,7 @@
 <?php
 namespace timkelty\craftcms\registrar;
 
+use Craft;
 use craft\elements\User;
 use yii\base\Event;
 
@@ -13,9 +14,11 @@ class Plugin extends \craft\base\Plugin
     {
         parent::init();
 
+        // If settings are invalid, log and bail.
         if (!$this->getSettings()->validate()) {
-            // TODO: log error
-            exit(var_dump($this->getSettings()->getErrors()));
+            Craft::warning('Invalid plugin configuration.', __METHOD__);
+
+            return;
         }
 
         $this->setComponents([
