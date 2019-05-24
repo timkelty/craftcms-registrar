@@ -14,9 +14,14 @@ class Plugin extends \craft\base\Plugin
     {
         parent::init();
 
-        // If settings are invalid, log and bail.
+        if (!Craft::$app->getProjectConfig()->get('users.allowPublicRegistration')) {
+            Craft::error('Registrar requires public registration to be allowed.', __METHOD__);
+
+            return;
+        }
+
         if (!$this->getSettings()->validate()) {
-            Craft::warning('Invalid plugin configuration.', __METHOD__);
+            Craft::error('Invalid plugin configuration.', __METHOD__);
 
             return;
         }
@@ -44,5 +49,10 @@ class Plugin extends \craft\base\Plugin
     protected function createSettingsModel()
     {
         return new models\Settings();
+    }
+
+    public static function t($message, ...$args)
+    {
+        return Craft::t(self::getInstance()->handle, $message, ...$args);
     }
 }

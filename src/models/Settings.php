@@ -2,6 +2,7 @@
 namespace timkelty\craftcms\registrar\models;
 
 use Craft;
+use timkelty\craftcms\registrar\validators\ArrayValidator;
 
 class Settings extends \craft\base\Model
 {
@@ -17,19 +18,23 @@ class Settings extends \craft\base\Model
 
     public function attributes()
     {
-        $attributes = parent::attributes();
-        $attributes[] = 'tests';
-
-        return $attributes;
+        return array_merge(parent::attributes(), [
+            'tests'
+        ]);
     }
 
     public function setTests($tests)
     {
-        $this->tests = $tests ?? [];
+        $this->tests = $tests;
     }
 
     public function getTests()
     {
+        // If not array, let validation take care of it
+        if (!is_array($this->tests)) {
+            return $this->tests;
+        }
+
         return array_map(function ($test) {
             return $test instanceof RegistrationTest ? $test : new RegistrationTest($test);
         }, $this->tests);
@@ -37,9 +42,11 @@ class Settings extends \craft\base\Model
 
     public function rules()
     {
-        // TODO: Validate tests with craft\validators\ArrayValidator?
         return [
-            [['requireValidation', 'tests'], 'required'],
+            [['requireValidation'], 'required'],
+            ['tests', ArrayValidator::class, 'callback' => function ($value) {
+                return $value instanceof RegistrationTest;
+            }],
         ];
     }
 }

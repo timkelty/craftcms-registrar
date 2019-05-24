@@ -2,6 +2,7 @@
 namespace timkelty\craftcms\registrar\models;
 
 use Craft;
+use timkelty\craftcms\registrar\Plugin;
 
 class RegistrationTest extends \craft\base\Model
 {
@@ -26,10 +27,24 @@ class RegistrationTest extends \craft\base\Model
     public function setGroups($groups)
     {
         $groupIds = array_map(function ($handle) {
-            return Craft::$app->getUserGroups()->getGroupByHandle($handle)->id;
+            $group = Craft::$app->getUserGroups()->getGroupByHandle($handle);
+
+            if (!$group) {
+                Craft::warning(
+                    Plugin::t(
+                        'Invalid user group handle: "{handle}".',
+                        ['handle' => $handle]
+                    ),
+                    __METHOD__
+                );
+
+                return null;
+            }
+
+            return $group->id;
         }, $groups);
 
-        $this->setGroupIds($groupIds);
+        $this->setGroupIds(array_filter($groupIds));
     }
 
     public function rules()
