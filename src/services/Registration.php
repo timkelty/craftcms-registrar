@@ -50,7 +50,7 @@ class Registration extends Component
     foreach ($this->_passedTests as $test) {
       if (is_callable($test->user)) {
         call_user_func($test->user, $user);
-      } elseif ($user) {
+      } elseif ($test->user) {
         Craft::configure($user, $test->user);
       }
 

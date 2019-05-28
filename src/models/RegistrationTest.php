@@ -3,6 +3,8 @@ namespace timkelty\craftcms\registrar\models;
 
 use Craft;
 use timkelty\craftcms\registrar\Plugin;
+use timkelty\craftcms\registrar\validators\CollectionValidator;
+use craft\models\UserGroup;
 
 class RegistrationTest extends \craft\base\Model
 {
@@ -12,61 +14,42 @@ class RegistrationTest extends \craft\base\Model
     public $user;
     public $permissions;
 
-    private $_groups = [];
-    private $_groupIds = [];
-
-    public function setGroupIds($groupIds)
-    {
-        $this->_groupIds = is_array($groupIds) ? $groupIds : [];
-    }
+    private $_groups;
+    private $_groupIds;
 
     public function setGroups($groups)
     {
-        $this->_groups = is_array($groups) ? $groups : [];
+        $this->_groups = $groups;
     }
 
     public function getGroupIds()
     {
-        return array_map(function ($group) {
+        $this->_groupIds = array_map(function ($group) {
             return $group->id;
         }, $this->getGroups());
+
+        return $this->_groupIds;
     }
 
     public function getGroups()
     {
-        $groups = array_map(function ($group) {
-            $group = $group instanceof craft\models\UserGroup ? $group : Craft::$app->getUserGroups()->getGroupByHandle($group);
+        if (is_array($this->_groups)) {
+            $this->_groups = array_unique(array_filter(array_map(function ($group) {
+                $group = $group instanceof UserGroup ? $group : Craft::$app->getUserGroups()->getGroupByHandle($group);
 
-            if (!$group) {
-                Craft::warning(
-                    Plugin::t(
-                        'Invalid user group handle: "{handle}".',
-                        ['handle' => $group]
-                    ),
-                    __METHOD__
-                );
-            }
+                if (!$group) {
+                    Craft::warning(
+                        Plugin::t(
+                            'Invalid user group handle: "{handle}".',
+                            ['handle' => $group]
+                        ),
+                        __METHOD__
+                    );
+                }
 
-            return $group;
-        }, $this->_groups);
-
-        $groupsById = array_map(function ($groupId) {
-            $group = Craft::$app->getUserGroups()->getGroupById($groupId);
-
-            if (!$group) {
-                Craft::warning(
-                    Plugin::t(
-                        'Invalid user group id: "{id}".',
-                        ['id' => $groupId]
-                    ),
-                    __METHOD__
-                );
-            }
-
-            return $group;
-        }, $this->_groupIds);
-
-        $this->_groups = array_unique(array_filter(array_merge($groups, $groupsById)));
+                return $group;
+            }, $this->_groups)));
+        }
 
         return $this->_groups;
     }
@@ -76,6 +59,9 @@ class RegistrationTest extends \craft\base\Model
         return [
             [['attribute', 'validator'], 'required'],
             ['attribute', 'string'],
+            ['groups', CollectionValidator::class, 'instanceOf' => UserGroup::class],
+            ['permissions', \craft\validators\ArrayValidator::class],
+            ['options', \craft\validators\ArrayValidator::class],
         ];
     }
 }

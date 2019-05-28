@@ -29,7 +29,7 @@ class CollectionValidator extends \craft\validators\ArrayValidator
     }
 
     $this->notInstanceOf = $this->notInstanceOf ?? Plugin::t('{attribute} must contain only instances of {instanceOf}.');
-    $this->notValidInstances = $this->notValidInstances ?? Plugin::t('{attribute} must contain valid instances: {errors}.');
+    $this->notValidInstances = $this->notValidInstances ?? Plugin::t('{attribute} must contain valid instances: {errors}');
   }
 
   /**
