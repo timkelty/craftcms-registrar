@@ -9,7 +9,7 @@ use yii\base\DynamicModel;
 
 class Registration extends Component
 {
-  private $passedTests = [];
+  private $_passedTests = [];
 
   public function beforeUserSave(ModelEvent $event)
   {
@@ -20,7 +20,7 @@ class Registration extends Component
     $user = $event->sender;
     $settings = Plugin::getInstance()->getSettings();
 
-    $this->passedTests = array_filter($settings->tests, function ($test) use ($user) {
+    $this->_passedTests = array_filter($settings->tests, function ($test) use ($user) {
       $model = new DynamicModel([
         $test->attribute => $user->{$test->attribute}
       ]);
@@ -34,7 +34,7 @@ class Registration extends Component
       $user->addErrors($model->getErrors());
     });
 
-    if (empty($this->passedTests) && $settings->requireValidation) {
+    if (empty($this->_passedTests) && $settings->requireValidation) {
       $event->isValid = false;
     }
   }
@@ -47,7 +47,7 @@ class Registration extends Component
 
     $user = $event->sender;
 
-    foreach ($this->passedTests as $test) {
+    foreach ($this->_passedTests as $test) {
       if (is_callable($test->user)) {
         call_user_func($test->user, $user);
       } elseif ($user) {

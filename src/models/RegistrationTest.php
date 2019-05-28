@@ -12,39 +12,63 @@ class RegistrationTest extends \craft\base\Model
     public $user;
     public $permissions;
 
-    private $groupIds = [];
-
-    public function getGroupIds()
-    {
-        return $this->groupIds;
-    }
+    private $_groups = [];
+    private $_groupIds = [];
 
     public function setGroupIds($groupIds)
     {
-        $this->groupIds = array_merge($this->groupIds, $groupIds);
+        $this->_groupIds = is_array($groupIds) ? $groupIds : [];
     }
 
     public function setGroups($groups)
     {
-        $groupIds = array_map(function ($handle) {
-            $group = Craft::$app->getUserGroups()->getGroupByHandle($handle);
+        $this->_groups = is_array($groups) ? $groups : [];
+    }
+
+    public function getGroupIds()
+    {
+        return array_map(function ($group) {
+            return $group->id;
+        }, $this->getGroups());
+    }
+
+    public function getGroups()
+    {
+        $groups = array_map(function ($group) {
+            $group = $group instanceof craft\models\UserGroup ? $group : Craft::$app->getUserGroups()->getGroupByHandle($group);
 
             if (!$group) {
                 Craft::warning(
                     Plugin::t(
                         'Invalid user group handle: "{handle}".',
-                        ['handle' => $handle]
+                        ['handle' => $group]
                     ),
                     __METHOD__
                 );
-
-                return null;
             }
 
-            return $group->id;
-        }, $groups);
+            return $group;
+        }, $this->_groups);
 
-        $this->setGroupIds(array_filter($groupIds));
+        $groupsById = array_map(function ($groupId) {
+            $group = Craft::$app->getUserGroups()->getGroupById($groupId);
+
+            if (!$group) {
+                Craft::warning(
+                    Plugin::t(
+                        'Invalid user group id: "{id}".',
+                        ['id' => $groupId]
+                    ),
+                    __METHOD__
+                );
+            }
+
+            return $group;
+        }, $this->_groupIds);
+
+        $this->_groups = array_unique(array_filter(array_merge($groups, $groupsById)));
+
+        return $this->_groups;
     }
 
     public function rules()

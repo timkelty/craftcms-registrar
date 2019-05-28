@@ -1,7 +1,6 @@
 <?php
 namespace timkelty\craftcms\registrar\models;
 
-use Craft;
 use timkelty\craftcms\registrar\validators\CollectionValidator;
 
 class Settings extends \craft\base\Model
@@ -9,7 +8,7 @@ class Settings extends \craft\base\Model
     /**
      * @var array
      */
-    private $tests = [];
+    private $_tests = [];
 
     /**
      * @var bool
@@ -25,18 +24,18 @@ class Settings extends \craft\base\Model
 
     public function setTests($tests)
     {
-        $this->tests = $tests;
+        $this->_tests = $tests;
     }
 
     public function getTests()
     {
-        if (is_array($this->tests)) {
-            $this->tests = array_map(function ($test) {
+        if (is_array($this->_tests)) {
+            $this->_tests = array_map(function ($test) {
                 return $test instanceof RegistrationTest ? $test : new RegistrationTest($test);
-            }, $this->tests);
+            }, $this->_tests);
         }
 
-        return $this->tests;
+        return $this->_tests;
     }
 
     public function rules()
