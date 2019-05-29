@@ -11,6 +11,7 @@ class RegistrationTest extends \craft\base\Model
 {
     public $attribute = 'email';
     public $validator = 'match';
+    public $value;
     public $options;
     public $user;
     public $permissions;
@@ -69,19 +70,9 @@ class RegistrationTest extends \craft\base\Model
             return null;
         }
 
+        // TODO: don't need to do this, jsut addError to this model
         $validator = new Validator;
         $validator->addError($this, $attribute, '{attribute} must be an array or callable.');
-    }
-
-    public function validateTests($attribute)
-    {
-        foreach ($this->$attribute as $key => $test) {
-            if (!$test->validate()) {
-                $this->addErrors($test->getErrors());
-            }
-        }
-
-        return null;
     }
 
     public function rules()
