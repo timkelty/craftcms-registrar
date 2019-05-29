@@ -3,7 +3,6 @@ namespace timkelty\craftcms\registrar\models;
 
 use Craft;
 use timkelty\craftcms\registrar\Plugin;
-use timkelty\craftcms\registrar\validators\CollectionValidator;
 use craft\models\UserGroup;
 
 class RegistrationTest extends \craft\base\Model
@@ -24,9 +23,13 @@ class RegistrationTest extends \craft\base\Model
 
     public function getGroupIds()
     {
-        $this->_groupIds = array_map(function ($group) {
-            return $group->id;
-        }, $this->getGroups());
+        $groups = $this->getGroups();
+
+        if (is_array($groups)) {
+            $this->_groupIds = array_map(function ($group) {
+                return $group->id;
+            }, $groups);
+        }
 
         return $this->_groupIds;
     }
@@ -54,14 +57,25 @@ class RegistrationTest extends \craft\base\Model
         return $this->_groups;
     }
 
+    public function validateArrayOrCallable($attribute)
+    {
+        if (is_callable($this->$attribute) || is_array($this->$attribute)) {
+            return null;
+        }
+
+        $validator = new \yii\validators\Validator;
+        $validator->addError($this, $attribute, '{attribute} must be an array or callable.');
+    }
+
     public function rules()
     {
         return [
             [['attribute', 'validator'], 'required'],
             ['attribute', 'string'],
-            ['groups', CollectionValidator::class, 'instanceOf' => UserGroup::class],
+            ['groups', \craft\validators\ArrayValidator::class],
             ['permissions', \craft\validators\ArrayValidator::class],
             ['options', \craft\validators\ArrayValidator::class],
+            ['user', 'validateArrayOrCallable'],
         ];
     }
 }

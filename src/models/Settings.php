@@ -6,14 +6,14 @@ use timkelty\craftcms\registrar\validators\CollectionValidator;
 class Settings extends \craft\base\Model
 {
     /**
-     * @var array
-     */
-    private $_tests = [];
-
-    /**
      * @var bool
      */
     public $requireValidation = false;
+
+    /**
+     * @var array
+     */
+    private $_tests;
 
     public function attributes()
     {
@@ -41,7 +41,7 @@ class Settings extends \craft\base\Model
     public function rules()
     {
         return [
-            [['requireValidation'], 'required'],
+            [['requireValidation'], 'boolean'],
             ['tests', CollectionValidator::class, 'instanceOf' => RegistrationTest::class]
         ];
     }

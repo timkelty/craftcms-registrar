@@ -20,6 +20,7 @@ class Plugin extends \craft\base\Plugin
             return;
         }
 
+        // TODO: we can't bail here because we don't want invalid props to halt everyyhting
         if (!$this->getSettings()->validate()) {
             Craft::error('Invalid plugin configuration.', __METHOD__);
 

@@ -4,7 +4,6 @@ namespace timkelty\craftcms\registrar\validators;
 
 use Craft;
 use timkelty\craftcms\registrar\Plugin;
-use craft\helpers\StringHelper;
 use yii\base\InvalidConfigException;
 
 /**
@@ -29,7 +28,7 @@ class CollectionValidator extends \craft\validators\ArrayValidator
     }
 
     $this->notInstanceOf = $this->notInstanceOf ?? Plugin::t('{attribute} must contain only instances of {instanceOf}.');
-    $this->notValidInstances = $this->notValidInstances ?? Plugin::t('{attribute} must contain valid instances: {errors}');
+    $this->notValidInstances = $this->notValidInstances ?? Plugin::t('{attribute} must contain valid instances.');
   }
 
   /**
@@ -65,8 +64,6 @@ class CollectionValidator extends \craft\validators\ArrayValidator
       }
 
       if ($this->validateInstances && !$instance->validate()) {
-        $params['errors'] = StringHelper::toString($instance->getErrors());
-
         return [$this->notValidInstances, $params];
       }
     }
