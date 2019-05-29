@@ -65,26 +65,12 @@ class RegistrationTest extends \craft\base\Model
         return $this->_groups;
     }
 
-    public function validateArrayOrCallable($attribute)
-    {
-        if (is_callable($this->$attribute) || is_array($this->$attribute)) {
-            return null;
-        }
-
-        $this->addError($attribute, Plugin::t('{attribute} must be array or callable.', [
-            'attribute' => $this->getAttributeLabel($attribute),
-        ]));
-    }
-
     public function rules()
     {
         return [
             [['attribute', 'validator'], 'required'],
             [['attribute', 'validator'], 'string'],
-            ['options', ArrayValidator::class],
-            ['user', 'validateArrayOrCallable'],
-            ['groups', ArrayValidator::class],
-            ['permissions', ArrayValidator::class],
+            [['options', 'user', 'groups', 'permissions'], ArrayValidator::class],
             ['handle', HandleValidator::class],
         ];
     }
