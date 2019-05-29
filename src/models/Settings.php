@@ -1,7 +1,8 @@
 <?php
 namespace timkelty\craftcms\registrar\models;
 
-use timkelty\craftcms\registrar\validators\CollectionValidator;
+use craft\validators\ArrayValidator;
+use timkelty\craftcms\registrar\Plugin;
 
 class Settings extends \craft\base\Model
 {
@@ -9,6 +10,11 @@ class Settings extends \craft\base\Model
      * @var bool
      */
     public $requireValidation = false;
+
+    /**
+     * @var bool
+     */
+    public $debug = false;
 
     /**
      * @var array
@@ -38,11 +44,37 @@ class Settings extends \craft\base\Model
         return $this->_tests;
     }
 
+    public function validateTests($attribute)
+    {
+        foreach ($this->$attribute as $key => $test) {
+            if (!$test->validate()) {
+                $this->addErrors($test->getErrors());
+            }
+        }
+
+        return null;
+    }
+
+    public function afterValidate()
+    {
+        foreach ($this->getErrors() as $attribute => $errors) {
+            foreach ($errors as $error) {
+                Plugin::error(
+                    Plugin::t('Invalid settings: {error}', [
+                        'error' => $error
+                    ]),
+                    __METHOD__
+                );
+            }
+        }
+    }
+
     public function rules()
     {
         return [
-            [['requireValidation'], 'boolean'],
-            ['tests', CollectionValidator::class, 'instanceOf' => RegistrationTest::class]
+            [['requireValidation', 'debug'], 'boolean'],
+            ['tests', ArrayValidator::class],
+            ['tests', 'validateTests'],
         ];
     }
 }

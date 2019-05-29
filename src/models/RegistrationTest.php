@@ -2,8 +2,10 @@
 namespace timkelty\craftcms\registrar\models;
 
 use Craft;
-use timkelty\craftcms\registrar\Plugin;
 use craft\models\UserGroup;
+use craft\validators\ArrayValidator;
+use timkelty\craftcms\registrar\Plugin;
+use yii\validators\Validator;
 
 class RegistrationTest extends \craft\base\Model
 {
@@ -16,9 +18,11 @@ class RegistrationTest extends \craft\base\Model
     private $_groups;
     private $_groupIds;
 
-    public function setGroups($groups)
+    public function attributes()
     {
-        $this->_groups = $groups;
+        return array_merge(parent::attributes(), [
+            'groups'
+        ]);
     }
 
     public function getGroupIds()
@@ -34,20 +38,22 @@ class RegistrationTest extends \craft\base\Model
         return $this->_groupIds;
     }
 
+    public function setGroups($groups)
+    {
+        $this->_groups = $groups;
+    }
+
     public function getGroups()
     {
         if (is_array($this->_groups)) {
-            $this->_groups = array_unique(array_filter(array_map(function ($group) {
-                $group = $group instanceof UserGroup ? $group : Craft::$app->getUserGroups()->getGroupByHandle($group);
+            $this->_groups = array_unique(array_filter(array_map(function ($handle) {
+                $group = $handle instanceof UserGroup ? $handle : Craft::$app->getUserGroups()->getGroupByHandle($handle);
 
                 if (!$group) {
-                    Craft::warning(
-                        Plugin::t(
-                            'Invalid user group handle: "{handle}".',
-                            ['handle' => $group]
-                        ),
-                        __METHOD__
-                    );
+                    $this->addError('groups', Plugin::t(
+                        'Invalid user group handle: "{handle}".',
+                        ['handle' => $handle]
+                    ));
                 }
 
                 return $group;
@@ -63,8 +69,19 @@ class RegistrationTest extends \craft\base\Model
             return null;
         }
 
-        $validator = new \yii\validators\Validator;
+        $validator = new Validator;
         $validator->addError($this, $attribute, '{attribute} must be an array or callable.');
+    }
+
+    public function validateTests($attribute)
+    {
+        foreach ($this->$attribute as $key => $test) {
+            if (!$test->validate()) {
+                $this->addErrors($test->getErrors());
+            }
+        }
+
+        return null;
     }
 
     public function rules()
@@ -72,9 +89,9 @@ class RegistrationTest extends \craft\base\Model
         return [
             [['attribute', 'validator'], 'required'],
             ['attribute', 'string'],
-            ['groups', \craft\validators\ArrayValidator::class],
-            ['permissions', \craft\validators\ArrayValidator::class],
-            ['options', \craft\validators\ArrayValidator::class],
+            ['groups', ArrayValidator::class],
+            ['permissions', ArrayValidator::class],
+            ['options', ArrayValidator::class],
             ['user', 'validateArrayOrCallable'],
         ];
     }

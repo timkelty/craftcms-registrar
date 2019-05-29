@@ -1,9 +1,9 @@
 <?php
 namespace timkelty\craftcms\registrar\services;
 
-use timkelty\craftcms\registrar\Plugin;
-use craft\events\ModelEvent;
 use Craft;
+use craft\events\ModelEvent;
+use timkelty\craftcms\registrar\Plugin;
 use yii\base\Component;
 use yii\base\DynamicModel;
 
@@ -19,6 +19,9 @@ class Registration extends Component
 
     $user = $event->sender;
     $settings = Plugin::getInstance()->getSettings();
+
+    // Validate settings before we use them
+    $settings->validate();
 
     $this->_passedTests = array_filter($settings->tests, function ($test) use ($user) {
       $model = new DynamicModel([

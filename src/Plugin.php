@@ -3,6 +3,7 @@ namespace timkelty\craftcms\registrar;
 
 use Craft;
 use craft\elements\User;
+use yii\base\ErrorException;
 use yii\base\Event;
 
 class Plugin extends \craft\base\Plugin
@@ -15,16 +16,13 @@ class Plugin extends \craft\base\Plugin
         parent::init();
 
         if (!Craft::$app->getProjectConfig()->get('users.allowPublicRegistration')) {
-            Craft::error('Registrar requires public registration to be allowed.', __METHOD__);
+            self::error('Registrar requires public registration to be allowed.', __METHOD__);
 
             return;
         }
 
-        // TODO: we can't bail here because we don't want invalid props to halt everyyhting
-        if (!$this->getSettings()->validate()) {
-            Craft::error('Invalid plugin configuration.', __METHOD__);
-
-            return;
+        if ($this->getSettings()->debug) {
+            $this->getSettings()->validate();
         }
 
         $this->setComponents([
@@ -55,5 +53,18 @@ class Plugin extends \craft\base\Plugin
     public static function t($message, ...$args)
     {
         return Craft::t(self::getInstance()->handle, $message, ...$args);
+    }
+
+    public static function error($message, $category, $throw = null)
+    {
+        if ($throw === null && self::getInstance()->getSettings()->debug) {
+            $throw = ErrorException::class;
+        }
+
+        Craft::error($message, $category);
+
+        if ($throw) {
+            throw new $throw($message);
+        }
     }
 }
