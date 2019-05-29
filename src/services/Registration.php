@@ -90,7 +90,7 @@ class Registration extends Component
     }
 
     $model = new DynamicModel([
-      $test->attribute => $this->_getTestValue($test, $user),
+      $test->attribute => $test->value ?? $user->{$test->attribute} ?? null,
     ]);
 
     $model->addRule($test->attribute, $test->validator, $test->options);
@@ -102,19 +102,5 @@ class Registration extends Component
     }
 
     return true;
-  }
-
-  private function _getTestValue(RegistrationTest $test, User $user)
-  {
-    $value = $test->value ?? $user->{$test->attribute} ?? null;
-
-    if ($value === null) {
-      Plugin::error(Plugin::t('{testClass}::attribute must be an attribute of {userClass}, or have {testClass}::value set.', [
-        'testClass' => get_class($test),
-        'userClass' => get_class($user),
-      ]), __METHOD__);
-    }
-
-    return $value;
   }
 }
