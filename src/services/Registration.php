@@ -37,17 +37,19 @@ class Registration extends Component
         return false;
       }
 
-      $testValue = $test->value ?? $user->{$test->attribute} ?? null;
+      $value = $test->value ?? $user->{$test->attribute} ?? null;
 
-      if (!$testValue) {
-        Plugin::error(Plugin::t('{attribute} must be a valid attribute of {class}, or have a value set.', [
-          'attribute' => $test->attribute,
-          'class' => get_class($user)
+      if (!$value) {
+        Plugin::error(Plugin::t('{testClass}::attribute must be an attribute of {userClass}, or have {testClass}::value set.', [
+          'testClass' => get_class($test),
+          'userClass' => get_class($user),
         ]), __METHOD__);
+
+        return false;
       }
 
       $model = new DynamicModel([
-        $test->attribute => $testValue,
+        $test->attribute => $value,
       ]);
 
       $model->addRule($test->attribute, $test->validator, $test->options);
