@@ -37,6 +37,7 @@ class Registration extends Component
         return false;
       }
 
+      // TODO: should this happen in RegistrationTest::getValue?
       $value = $test->value ?? $user->{$test->attribute} ?? null;
 
       if (!$value) {
