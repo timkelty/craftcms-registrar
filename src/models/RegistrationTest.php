@@ -80,10 +80,10 @@ class RegistrationTest extends \craft\base\Model
         return [
             [['attribute', 'validator'], 'required'],
             ['attribute', 'string'],
-            ['groups', ArrayValidator::class],
-            ['permissions', ArrayValidator::class],
             ['options', ArrayValidator::class],
             ['user', 'validateArrayOrCallable'],
+            ['groups', ArrayValidator::class],
+            ['permissions', ArrayValidator::class],
         ];
     }
 }
