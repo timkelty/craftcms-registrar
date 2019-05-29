@@ -4,8 +4,8 @@ namespace timkelty\craftcms\registrar\models;
 use Craft;
 use craft\models\UserGroup;
 use craft\validators\ArrayValidator;
+use craft\validators\HandleValidator;
 use timkelty\craftcms\registrar\Plugin;
-use yii\validators\Validator;
 
 class RegistrationTest extends \craft\base\Model
 {
@@ -15,6 +15,7 @@ class RegistrationTest extends \craft\base\Model
     public $options;
     public $user;
     public $permissions;
+    public $handle;
 
     private $_groups;
     private $_groupIds;
@@ -84,6 +85,7 @@ class RegistrationTest extends \craft\base\Model
             ['user', 'validateArrayOrCallable'],
             ['groups', ArrayValidator::class],
             ['permissions', ArrayValidator::class],
+            ['handle', HandleValidator::class],
         ];
     }
 }
