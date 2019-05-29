@@ -9,7 +9,7 @@ class Settings extends \craft\base\Model
     /**
      * @var bool
      */
-    public $requireValidation = false;
+    public $requireValidatedTest = false;
 
     /**
      * @var bool
@@ -72,7 +72,7 @@ class Settings extends \craft\base\Model
     public function rules()
     {
         return [
-            [['requireValidation', 'debug'], 'boolean'],
+            [['requireValidatedTest', 'debug'], 'boolean'],
             ['tests', ArrayValidator::class],
             ['tests', 'validateTests'],
         ];
