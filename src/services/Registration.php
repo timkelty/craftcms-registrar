@@ -16,6 +16,9 @@ class Registration extends Component
 
   private $_validatedTests = [];
 
+  /**
+   * Validate tests and configure user
+   */
   public function beforeUserSave(ModelEvent $event)
   {
     if (!$this->_isPublicRegistration($event)) {
@@ -86,7 +89,6 @@ class Registration extends Component
       return false;
     }
 
-    // TODO: should this happen in RegistrationTest::getValue?
     $value = $test->value ?? $user->{$test->attribute} ?? null;
 
     if (!$value) {

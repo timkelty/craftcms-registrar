@@ -70,9 +70,9 @@ class RegistrationTest extends \craft\base\Model
             return null;
         }
 
-        // TODO: don't need to do this, jsut addError to this model
-        $validator = new Validator;
-        $validator->addError($this, $attribute, '{attribute} must be an array or callable.');
+        $this->addError($attribute, Plugin::t('{attribute} must be array or callable.', [
+            'attribute' => $this->getAttributeLabel($attribute),
+        ]));
     }
 
     public function rules()
