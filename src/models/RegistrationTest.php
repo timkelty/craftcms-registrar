@@ -79,7 +79,7 @@ class RegistrationTest extends \craft\base\Model
     {
         return [
             [['attribute', 'validator'], 'required'],
-            ['attribute', 'string'],
+            [['attribute', 'validator'], 'string'],
             ['options', ArrayValidator::class],
             ['user', 'validateArrayOrCallable'],
             ['groups', ArrayValidator::class],
