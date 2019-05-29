@@ -3,8 +3,10 @@ namespace timkelty\craftcms\registrar\services;
 
 use Craft;
 use craft\events\ModelEvent;
+use craft\elements\User;
 use timkelty\craftcms\registrar\Plugin;
 use timkelty\craftcms\registrar\events\RegistrationTestEvent;
+use timkelty\craftcms\registrar\models\RegistrationTest;
 use yii\base\Component;
 use yii\base\DynamicModel;
 
@@ -16,7 +18,7 @@ class Registration extends Component
 
   public function beforeUserSave(ModelEvent $event)
   {
-    if (!$this->isPublicRegistration($event)) {
+    if (!$this->_isPublicRegistration($event)) {
       return;
     }
 
@@ -27,39 +29,7 @@ class Registration extends Component
     $settings->validate();
 
     $this->_validatedTests = array_filter($settings->tests, function ($test) use ($user) {
-      $testEvent = new RegistrationTestEvent([
-        'user' => $user
-      ]);
-
-      ModelEvent::trigger($test, self::EVENT_BEFORE_VALIDATE_TEST, $testEvent);
-
-      if (!$testEvent->isValid) {
-        return false;
-      }
-
-      // TODO: should this happen in RegistrationTest::getValue?
-      $value = $test->value ?? $user->{$test->attribute} ?? null;
-
-      if (!$value) {
-        Plugin::error(Plugin::t('{testClass}::attribute must be an attribute of {userClass}, or have {testClass}::value set.', [
-          'testClass' => get_class($test),
-          'userClass' => get_class($user),
-        ]), __METHOD__);
-
-        return false;
-      }
-
-      $model = new DynamicModel([
-        $test->attribute => $value,
-      ]);
-
-      $model->addRule($test->attribute, $test->validator, $test->options);
-
-      if ($model->validate()) {
-        return true;
-      }
-
-      $user->addErrors($model->getErrors());
+      return $this->_validateTest($test, $user);
     });
 
     if (empty($this->_validatedTests) && $settings->requireValidatedTest) {
@@ -82,7 +52,7 @@ class Registration extends Component
    */
   public function afterUserSave(ModelEvent $event)
   {
-    if (!$this->isPublicRegistration($event) || !$this->_validatedTests) {
+    if (!$this->_isPublicRegistration($event) || empty($this->_validatedTests)) {
       return;
     }
 
@@ -99,8 +69,47 @@ class Registration extends Component
     }
   }
 
-  private function isPublicRegistration(ModelEvent $event)
+  private function _isPublicRegistration(ModelEvent $event)
   {
     return $event->isNew && !Craft::$app->getUser()->getIdentity();
+  }
+
+  private function _validateTest(RegistrationTest $test, User $user): bool
+  {
+    $beforeValidateEvent = new RegistrationTestEvent([
+      'user' => $user
+    ]);
+
+    ModelEvent::trigger($test, self::EVENT_BEFORE_VALIDATE_TEST, $beforeValidateEvent);
+
+    if (!$beforeValidateEvent->isValid) {
+      return false;
+    }
+
+    // TODO: should this happen in RegistrationTest::getValue?
+    $value = $test->value ?? $user->{$test->attribute} ?? null;
+
+    if (!$value) {
+      Plugin::error(Plugin::t('{testClass}::attribute must be an attribute of {userClass}, or have {testClass}::value set.', [
+        'testClass' => get_class($test),
+        'userClass' => get_class($user),
+      ]), __METHOD__);
+
+      return false;
+    }
+
+    $model = new DynamicModel([
+      $test->attribute => $value,
+    ]);
+
+    $model->addRule($test->attribute, $test->validator, $test->options);
+
+    if (!$model->validate()) {
+      $user->addErrors($model->getErrors());
+
+      return false;
+    }
+
+    return true;
   }
 }
