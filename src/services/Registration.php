@@ -57,7 +57,11 @@ class Registration extends Component
 
     foreach ($this->_validatedTests as $test) {
       if ($test->user) {
-        Craft::configure($user, $test->user);
+        try {
+          Craft::configure($user, $test->user);
+        } catch (UnknownPropertyException $e) {
+          Plugin::error($e->getMessage(), __METHOD__, UnknownPropertyException::class);
+        }
       }
     }
   }
