@@ -15,7 +15,6 @@ class RegistrationTest extends \craft\base\Model
     public $options;
     public $user;
     public $permissions;
-    public $handle;
 
     private $_groups;
     private $_groupIds;
@@ -71,7 +70,6 @@ class RegistrationTest extends \craft\base\Model
             [['attribute', 'validator'], 'required'],
             [['attribute', 'validator'], 'string'],
             [['options', 'user', 'groups', 'permissions'], ArrayValidator::class],
-            ['handle', HandleValidator::class],
         ];
     }
 }

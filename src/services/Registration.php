@@ -5,14 +5,15 @@ use Craft;
 use craft\events\ModelEvent;
 use craft\elements\User;
 use timkelty\craftcms\registrar\Plugin;
-use timkelty\craftcms\registrar\events\RegistrationTestEvent;
+use timkelty\craftcms\registrar\events\RegisterTestsEvent;
 use timkelty\craftcms\registrar\models\RegistrationTest;
 use yii\base\Component;
 use yii\base\DynamicModel;
+use yii\web\ForbiddenHttpException;
 
 class Registration extends Component
 {
-  const EVENT_BEFORE_VALIDATE_TEST = 'beforeValidateTest';
+  const EVENT_REGISTER_TESTS = 'registerTests';
 
   private $_validatedTests = [];
 
@@ -31,9 +32,22 @@ class Registration extends Component
     // Validate settings before we use them
     $settings->validate();
 
-    $this->_validatedTests = array_filter($settings->tests, function ($test) use ($user) {
-      return $this->_validateTest($test, $user);
-    });
+    // Add tests via event
+    $registerTestsEvent = new RegisterTestsEvent([
+      'user' => $user,
+      'tests' => $settings->tests,
+    ]);
+
+    $this->trigger(self::EVENT_REGISTER_TESTS, $registerTestsEvent);
+
+    // Fallback exception in case we don't end up with any tests
+    if (empty($registerTestsEvent->tests)) {
+      throw new ForbiddenHttpException('Public registration is not allowed');
+    } else {
+      $this->_validatedTests = array_filter($registerTestsEvent->tests, function ($test) use ($user) {
+        return $this->_validateTest($test, $user);
+      });
+    }
 
     if (empty($this->_validatedTests) && $settings->requireValidatedTest) {
       $event->isValid = false;
@@ -77,16 +91,6 @@ class Registration extends Component
 
   private function _validateTest(RegistrationTest $test, User $user): bool
   {
-    $beforeValidateEvent = new RegistrationTestEvent([
-      'user' => $user
-    ]);
-
-    ModelEvent::trigger($test, self::EVENT_BEFORE_VALIDATE_TEST, $beforeValidateEvent);
-
-    if (!$beforeValidateEvent->isValid) {
-      return false;
-    }
-
     $model = new DynamicModel([
       $test->attribute => $test->value ?? $user->{$test->attribute} ?? null,
     ]);
