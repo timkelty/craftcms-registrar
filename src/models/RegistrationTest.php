@@ -4,7 +4,6 @@ namespace timkelty\craftcms\registrar\models;
 use Craft;
 use craft\models\UserGroup;
 use craft\validators\ArrayValidator;
-use craft\validators\HandleValidator;
 use timkelty\craftcms\registrar\Plugin;
 
 class RegistrationTest extends \craft\base\Model
