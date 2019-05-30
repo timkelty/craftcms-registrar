@@ -9,6 +9,7 @@ use timkelty\craftcms\registrar\events\RegisterTestsEvent;
 use timkelty\craftcms\registrar\models\RegistrationTest;
 use yii\base\Component;
 use yii\base\DynamicModel;
+use yii\base\UnknownPropertyException;
 use yii\web\ForbiddenHttpException;
 
 class Registration extends Component
@@ -95,6 +96,11 @@ class Registration extends Component
 
   private function _validateTest(RegistrationTest $test, User $user): bool
   {
+    // First, validate the test itself
+    if (!$test->validate()) {
+      return false;
+    }
+
     $model = new DynamicModel([
       $test->attribute => $test->value ?? $user->{$test->attribute} ?? null,
     ]);
