@@ -55,7 +55,7 @@ class Plugin extends \craft\base\Plugin
         return Craft::t(self::getInstance()->handle, $message, ...$args);
     }
 
-    public static function error($message, $category, $throw = null)
+    public static function error(string $message, string $category, ?string $throw = null)
     {
         if ($throw === null && self::getInstance()->getSettings()->debug) {
             $throw = ErrorException::class;
