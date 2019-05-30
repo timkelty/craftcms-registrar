@@ -6,11 +6,8 @@ use yii\base\Event;
 
 class RegisterTestsEvent extends Event
 {
-  // Properties
-  // =========================================================================
-
   /**
-   * @var User|null The user associated with the event
+   * @var User|null The user attempting to register
    */
   public $user;
 
