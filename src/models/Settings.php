@@ -6,6 +6,8 @@ use timkelty\craftcms\registrar\Plugin;
 
 class Settings extends \craft\base\Model
 {
+    use LogErrorsTrait;
+
     /**
      * @var bool
      */
@@ -44,37 +46,11 @@ class Settings extends \craft\base\Model
         return $this->_tests;
     }
 
-    public function validateTests($attribute)
-    {
-        foreach ($this->$attribute as $key => $test) {
-            if (!$test->validate()) {
-                $this->addErrors($test->getErrors());
-            }
-        }
-
-        return null;
-    }
-
-    public function afterValidate()
-    {
-        foreach ($this->getErrors() as $attribute => $errors) {
-            foreach ($errors as $error) {
-                Plugin::error(
-                    Plugin::t('Invalid settings: {error}', [
-                        'error' => $error
-                    ]),
-                    __METHOD__
-                );
-            }
-        }
-    }
-
     public function rules()
     {
         return [
             [['requireValidatedTest', 'debug'], 'boolean'],
             ['tests', ArrayValidator::class],
-            ['tests', 'validateTests'],
         ];
     }
 }

@@ -8,6 +8,8 @@ use timkelty\craftcms\registrar\Plugin;
 
 class RegistrationTest extends \craft\base\Model
 {
+    use LogErrorsTrait;
+
     public $attribute = 'email';
     public $validator = 'match';
     public $value;
@@ -50,10 +52,10 @@ class RegistrationTest extends \craft\base\Model
                 $group = $handle instanceof UserGroup ? $handle : Craft::$app->getUserGroups()->getGroupByHandle($handle);
 
                 if (!$group) {
-                    $this->addError('groups', Plugin::t(
+                    Plugin::error(Plugin::t(
                         'Invalid user group handle: "{handle}".',
                         ['handle' => $handle]
-                    ));
+                    ), __METHOD__);
                 }
 
                 return $group;
